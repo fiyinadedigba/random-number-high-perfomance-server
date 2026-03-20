@@ -28,10 +28,6 @@ The goal is to ensure **high availability, low latency, and system reliability**
 
 ---
 
-# Task 2: Monitoring a High-Performance SSL Offloading Server
-
----
-
 ## Key Metrics to Monitor
 
 ### 1. CPU Metrics

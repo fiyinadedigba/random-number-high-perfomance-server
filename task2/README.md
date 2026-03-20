@@ -1,4 +1,4 @@
-# Task 2: Monitoring a High-Performance SSL Offloading Server
+# Monitoring a High-Performance SSL Offloading Server
 
 ---
 

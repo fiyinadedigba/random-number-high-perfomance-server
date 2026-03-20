@@ -28,187 +28,196 @@ The goal is to ensure **high availability, low latency, and system reliability**
 
 ---
 
+# Task 2: Monitoring a High-Performance SSL Offloading Server
+
+---
+
 ## Key Metrics to Monitor
 
 ### 1. CPU Metrics
 
-- CPU utilization (per core)
-- User vs system CPU time
-- Load average
-- Context switches
+- CPU utilization (per core)  
+- User vs system CPU time  
+- Load average  
+- Context switches  
 
-**Why:**  
-SSL/TLS encryption and decryption are CPU-intensive operations. High CPU usage can directly impact request latency and throughput.
+**Why:**
+
+- **CPU utilization (per core):** Indicates how busy each core is. High usage across all cores may lead to increased latency in SSL processing.  
+- **User vs system CPU time:** Helps distinguish between application load (user) and kernel/network overhead (system).  
+- **Load average:** Shows the number of processes waiting for CPU. Values higher than the number of CPU cores indicate overload.  
+- **Context switches:** High rates may indicate excessive process switching, reducing efficiency under high concurrency.  
 
 ---
 
 ### 2. Memory Metrics
 
-- Total memory usage
-- Free vs used memory
-- Cache and buffer usage
-- Swap usage (should remain near zero)
+- Total memory usage  
+- Free vs used memory  
+- Cache and buffer usage  
+- Swap usage  
 
 **Why:**  
-Memory pressure can lead to swapping, significantly degrading performance.
+Memory pressure and swap usage can significantly degrade performance, especially under high request rates.
 
 ---
 
 ### 3. Network Metrics
 
-- Throughput (bytes in/out per second)
-- Packets per second
-- Packet drops and errors
-- Interface utilization per NIC
+- Throughput (bytes in/out per second)  
+- Packets per second  
+- Packet drops and errors  
+- Interface utilization per NIC  
 
 **Why:**  
-With 10 Gbit/s interfaces, network bottlenecks or packet loss can severely impact performance and request handling.
+With 10 Gbit/s interfaces, network bottlenecks or packet loss directly impact request handling and latency.
 
 ---
 
 ### 4. Disk I/O Metrics
 
-- Read/write throughput
-- IOPS
-- Disk latency
+- Read/write throughput  
+- IOPS  
+- Disk latency  
 
 **Why:**  
-Although SSL offloading is mostly in-memory, logging and buffering operations may introduce disk I/O overhead.
+Although SSL offloading is primarily CPU-bound, logging and buffering can introduce disk overhead.
 
 ---
 
 ### 5. Application-Level Metrics
 
-- Requests per second (RPS)
-- Latency (p50, p95, p99)
-- Error rates (4xx, 5xx)
-- Active and idle connections
+- Requests per second (RPS)  
+- Latency (p50, p95, p99)  
+- Error rates (4xx, 5xx)  
+- Active connections  
 
 **Why:**  
-These metrics reflect the **end-user experience** and overall system health.
+These metrics reflect the **end-user experience** and service health.
 
 ---
 
 ### 6. SSL/TLS Metrics
 
-- TLS handshake rate
-- Handshake failures
-- Session reuse rate
-- TLS version distribution
+- TLS handshake rate  
+- Handshake failures  
+- Session reuse rate  
 
 **Why:**  
-TLS handshakes are computationally expensive. Poor session reuse increases CPU load.
+TLS handshakes are computationally expensive and can significantly increase CPU load.
 
 ---
 
 ## Monitoring Implementation
 
-### Using Zabbix
-
-Monitoring can be implemented using **Zabbix**, which provides a comprehensive platform for system and application monitoring.
-
-#### System Monitoring
-
-- Deploy Zabbix agents on the server
-- Collect:
-  - CPU usage (per core)
-  - Memory usage
-  - Disk I/O
-  - Network statistics
-
-#### Network Monitoring
-
-- Monitor NIC throughput and packet drops
-- Use SNMP (if required) for network-level visibility
-
-#### Application Monitoring
-
-- Define custom Zabbix items for:
-  - Requests per second
-  - Latency metrics
-  - Error rates
-
-#### Extensibility with Scripts
-
-Custom **Bash or Python scripts** can be integrated with Zabbix to collect advanced metrics such as:
-
-- TLS handshake statistics  
-- Application-specific performance data
-
-### Alternative Monitoring Stack (Prometheus & Grafana)
-
-In addition to Zabbix, a modern monitoring stack can also be implemented using:
+Monitoring can be implemented using a modern observability stack:
 
 - Prometheus for metrics collection and time-series storage  
-- Grafana for visualization and dashboards  
+- Node Exporter for system-level metrics  
+- Application exporters (e.g., NGINX, HAProxy)  
+- Grafana for dashboards and visualization  
 
-This approach is particularly useful for:
-- High-resolution, real-time metrics
-- Flexible querying (PromQL)
-- Advanced visualization and alerting
+This approach provides **high-resolution, real-time monitoring and flexible querying**.
 
-In some environments, Prometheus and Grafana can complement or replace traditional monitoring systems depending on scalability and operational requirements.
+---
+
+### Alternative Approach (Zabbix)
+
+In environments where Zabbix is used, similar monitoring can be achieved using:
+
+- Zabbix agents for system metrics  
+- Custom items for application-level metrics  
+- Built-in alerting and dashboards  
+
+Zabbix provides an integrated solution for infrastructure monitoring and alerting.
+
+---
+
+## Tooling and Observability Approach
+
+Monitoring should combine system-level tools, centralized metrics, and logging.
+
+### System-Level Monitoring
+
+- `top`, `htop` → real-time CPU and memory usage  
+- `vmstat`, `iostat`, `sar` → performance trends  
+- `netstat`, `ss` → network connections and socket statistics  
+
+These tools are useful for **on-host diagnostics and incident response**.
+
+---
+
+### Metrics Collection (Production)
+
+- Prometheus + Node Exporter → system metrics  
+- Application exporters → request rate, latency, errors  
+- Grafana → dashboards and visualization  
+
+---
+
+### Logging & Tracing
+
+- Centralized logging (e.g., ELK stack) → log aggregation and analysis  
+- Request tracing → end-to-end latency visibility  
+
+These are critical for debugging and understanding system behaviour under load.
 
 ---
 
 ## Alerting Strategy
 
-Effective alerting is critical for proactive incident management.
+Effective alerting enables proactive incident response.
 
 ### Example Triggers
 
-- CPU usage > 85% (sustained)
-- Packet drops detected on network interfaces
-- Latency (p95/p99) exceeds threshold
-- Error rates increase beyond acceptable limits
-- Memory usage nearing capacity or swap activity detected
+- CPU usage > 85% (sustained)  
+- Packet drops detected on network interfaces  
+- High latency (p95/p99 thresholds exceeded)  
+- Increased error rates  
+- Memory exhaustion or swap activity  
 
 ### Notifications
 
-- Email alerts
-- Integration with incident management tools (e.g., Slack, PagerDuty)
+- Email alerts  
+- Integration with tools such as Slack or PagerDuty  
 
 ---
 
 ## Challenges of Monitoring
 
-### 1. High Throughput
+### High Throughput
 
-Handling 25,000 requests per second requires **low-overhead monitoring** to avoid impacting performance.
-
----
-
-### 2. Data Volume
-
-Large volumes of logs and metrics require efficient storage, aggregation, and visualization strategies.
+Handling 25,000 requests per second requires low-overhead monitoring to avoid impacting performance.
 
 ---
 
-### 3. Latency Sensitivity
+### Data Volume
 
-Small performance degradations can significantly impact user experience. High-resolution monitoring is required.
-
----
-
-### 4. Network Complexity
-
-High-speed (10 Gbit/s) interfaces can experience short-lived spikes (microbursts) that are difficult to detect.
+Large volumes of metrics and logs require efficient storage and aggregation.
 
 ---
 
-### 5. SSL Overhead
+### Latency Sensitivity
 
-TLS handshakes introduce CPU spikes, especially during traffic bursts.
+Small performance degradations can significantly affect user experience.
 
 ---
 
-### 6. Correlation of Metrics
+### Network Complexity
 
-Effective monitoring requires correlating:
+High-speed interfaces may experience microbursts that are difficult to detect.
 
-- System metrics (CPU, memory)
-- Network metrics
-- Application-level metrics  
+---
+
+### SSL Overhead
+
+TLS handshakes can introduce CPU spikes during traffic bursts.
+
+---
+
+### Metric Correlation
+
+Effective monitoring requires correlating system, network, and application metrics to identify root causes.
 
 ---
 
@@ -216,10 +225,10 @@ Effective monitoring requires correlating:
 
 To effectively monitor a high-performance SSL offloading server:
 
-- Focus on **CPU, network, and application metrics**
-- Use a robust monitoring platform such as **Zabbix**
-- Extend monitoring capabilities with **custom scripts where necessary**
-- Implement **proactive alerting**
-- Address challenges related to **scale, latency, and data volume**
+- Focus on CPU, network, and application-level metrics  
+- Use Prometheus and Grafana for scalable, real-time monitoring  
+- Leverage Zabbix where required for integrated infrastructure monitoring  
+- Combine metrics, logs, and tracing for full observability  
+- Implement proactive alerting to ensure rapid incident response  
 
-This approach ensures **system reliability, performance optimization, and rapid incident response** in a production environment.
+This approach ensures reliability, performance, and scalability in a production environment.

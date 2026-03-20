@@ -13,7 +13,8 @@ Design a script that writes the numbers from 1 - 10 in random order, with a test
 1. [Build instructions](#build-instructions)  
 2. [Usage](#usage)  
 3. [Description](#description)  
-4. [Known limitations / bugs](#known-limitations--bugs)  
+4. [Known limitations / bugs](#known-limitations--bugs)
+5. [Sample Output Screenshot](#sample-output--screenshot)
 
 ---
 
@@ -47,6 +48,7 @@ chmod +x *.sh
 brew install coreutils
 ```
 
+
 ## Usage
 
 Run any of the scripts:
@@ -77,6 +79,9 @@ Run the test script to verify correctness:
 | Duplicates   | No duplicates exist                |
 | Completeness | All numbers from 1–10 are present  |
 
+
+
+
 ## Description
 
 This project provides three Bash-based implementations for generating numbers from 1 - 10 in random order:
@@ -87,12 +92,13 @@ This project provides three Bash-based implementations for generating numbers fr
 | GNU `shuf` / `gshuf`                      | Uses GNU coreutils internal randomization                 | Simple, fast, does not explicitly implement Fisher–Yates; requires `gshuf` on macOS      |
 | Secure version (`openssl rand`) | Uses `openssl rand` for secure randomness                 | Implements Fisher–Yates shuffle with rejection sampling to avoid bias; slower but secure |
 
-
 ### Key features of all the scripts:
 
 1. Random order for every run
 2. No duplicates
 3. Complete set of numbers from 1–10
+
+
 
 ## Known limitations / bugs
 
@@ -114,6 +120,12 @@ This project provides three Bash-based implementations for generating numbers fr
   - It is slower than the other two methods because of extra calculations.
   - Bash scripts are not the best choice if you need very fast or heavy cryptographic operations.
 **For large-scale secure applications, use compiled languages or libraries (e.g., Python `secrets`, C/C++ OpenSSL, Go `crypto/rand`).**
+
+## Sample Output Screenshot
+
+<img width="1440" height="900" alt="Screenshot 2026-03-20 at 10 24 11" src="https://github.com/user-attachments/assets/9b689e4e-7e45-47e1-a57d-47b81f465702" />
+
+
 
 > **Extra Notes:**  
 > Bash is widely used in companies for automation, system administration, and network monitoring tasks.  

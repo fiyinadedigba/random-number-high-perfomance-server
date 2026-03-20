@@ -203,7 +203,9 @@ TLS handshakes can introduce CPU spikes during traffic bursts.
 
 ### Metric Correlation
 
-Effective monitoring requires correlating system, network, and application metrics to identify root causes.
+Identifying the root cause of issues requires correlating multiple metrics (CPU, network, and application-level data).
+
+For example, high latency may be caused by CPU saturation, increased TLS handshakes, or network congestion. Since these signals are interconnected, analyzing a single metric in isolation can lead to incorrect conclusions.
 
 ---
 

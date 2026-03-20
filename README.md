@@ -17,32 +17,43 @@ Design a script that writes the numbers from 1 - 10 in random order, with a test
 
 ---
 
-## Project Description
+## Description
 
-This repository contains a **pure Bash script** to shuffle numbers within a specified range, using a **scalable design**.  
+This repository contains a **pure Bash script** to shuffle numbers within a specified range using a **scalable design**.
 
-- The script uses **Bash’s `$RANDOM`** to generate pseudo-random numbers.
-- Fully **scalable**: supports any integer range, not just 1–10. 
-- Supports **optional deterministic seeding** to reproduce the same shuffled sequence.  
-- Suitable for games, demos, and learning purposes.  
-- Includes a **test script** (`test_random_1_to_10.sh`) that validates:  
-  - Correct number of lines  
-  - All numbers within range  
-  - No duplicates  
-  - All numbers in the range are present 
+### Features
 
-**Why I used pure Bash approach**  
+- Uses Bash’s `$RANDOM` to generate pseudo-random numbers  
+- Fully scalable: supports any integer range, not just 1–10  
+- Supports optional deterministic seeding to reproduce the same shuffled sequence  
+- Suitable for games, demos, and learning purposes  
 
-- Simple, no dependencies.  
-- Cross-platform compatibility (Linux/macOS).  
-- No need for GNU coreutils (`shuf`) or `openssl rand`.  
-- Secure cryptography is **not the goal**; `$RANDOM` is pseudo-random.
+### Testing
 
+Includes a test script (`test_random_1_to_10.sh`) that validates:
 
-> **Note:** The Fisher–Yates shuffle is an algorithm for shuffling a finite sequence.  
-> It produces a **random permutation** of elements where each possible order is equally likely.  
-> The pure Bash version implements this algorithm to shuffle numbers with the default being from 1 to 10.
----
+- Correct number of lines  
+- All numbers are within the specified range  
+- No duplicate values  
+- All numbers in the range are present  
+
+### Design Choice: Pure Bash
+
+This solution uses a pure Bash approach because:
+
+- Simple and lightweight (no external dependencies)  
+- Cross-platform compatibility (Linux/macOS)  
+- No need for GNU `shuf` or `openssl rand`  
+- Cryptographic security is not required (`$RANDOM` is pseudo-random)  
+
+### Algorithm
+
+The script implements the **Fisher–Yates shuffle algorithm**, which generates a random permutation of a finite sequence.
+
+- Each possible ordering is equally likely  
+- Ensures no duplicates or missing values  
+- Default behavior shuffles numbers from **1 to 10**, but supports any range
+  
 
 ## Build instructions
 

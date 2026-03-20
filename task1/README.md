@@ -1,4 +1,4 @@
-# Technical Tasks Repository
+# Documentation
 
 Design a script that writes the numbers from 1 - 10 in random order and provide tests for the script.
 

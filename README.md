@@ -35,12 +35,15 @@ A **test script** is included to verify correctness.
 
 ## Build instructions
 
-1. Clone or download the repository, or create a local folder.  
+1. Clone or download the repository, or create a local folder.
+
 2. Make all scripts executable:
-3. **Optional (macOS only):** To run the GNU `shuf` version - `gshuf` , install coreutils:
 
 ```bash
-brew install coreutils
-   
-```bash
 chmod +x *.sh
+```
+3. To run the GNU shuf version (gshuf) on macOS, install GNU coreutils:
+```bash
+brew install coreutils
+```
+

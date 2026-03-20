@@ -17,10 +17,10 @@
 
 This task focuses on designing a monitoring strategy for a high-performance server with the following specifications:
 
-- 4 × Intel Xeon CPU E7-4830 v4 @ 2.00GHz  
-- 64 GB RAM  
-- 2 TB HDD  
-- 2 × 10 Gbit/s network interfaces  
+- 4 times Intel(R) Xeon(R) CPU E7-4830 v4 @ 2.00GHz
+- 64GB of ram
+- 2 tb HDD disk space
+- 2 x 10Gbit/s nics 
 
 The server is responsible for **SSL offloading** and handling approximately **25,000 requests per second**, making it both **CPU-intensive** and **network-intensive**.
 

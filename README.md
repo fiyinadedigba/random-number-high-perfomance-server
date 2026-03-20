@@ -59,7 +59,7 @@ Run any of the scripts:
 
 ```bash
 # Pure Bash version (Fisher–Yates)
-./random_1_to_10.sh
+./random_1_10.sh
 
 # GNU shuf / gshuf version
 ./random_1_to_10_shuf.sh
@@ -71,7 +71,7 @@ Run any of the scripts:
 Run the test script to verify correctness:
 
 ```bash
-./test_random_1_to_10.sh ./random_1_to_10.sh
+./test_random_1_to_10.sh ./random_1_10.sh
 ./test_random_1_to_10.sh ./random_1_to_10_shuf.sh
 ./test_random_1_to_10.sh ./secure_random_1_to_10.sh
 ```

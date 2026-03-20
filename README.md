@@ -14,7 +14,7 @@ Design a script that writes the numbers from 1 - 10 in random order, with a test
 2. [Usage](#usage)  
 3. [Description](#description)  
 4. [Known limitations / bugs](#known-limitations--bugs)
-5. [Sample Output Screenshot](#sample-output--screenshot)
+5. [Sample Output Screenshot](#sample-output-screenshot)
 
 ---
 

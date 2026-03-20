@@ -32,6 +32,10 @@ Three implementations are included:
 3. **Cryptographically secure (`openssl rand`)** – secure randomness, suitable for sensitive applications  
 
 A **test script** is included to verify correctness.
+
+> **Note:** The Fisher–Yates shuffle is an algorithm for shuffling a finite sequence.  
+> It produces a **random permutation** of elements where each possible order is equally likely.  
+> The pure Bash version implements this algorithm to shuffle numbers 1–10.
 ---
 
 ## Build instructions

@@ -2,47 +2,43 @@
 
 ## What Does This Server Do?
 
-When accessing a website via HTTPS, your browser and the server perform an SSL/TLS handshake to establish a secure, encrypted connection. This process is resource-intensive, especially at the outset, due to the demands of public-key cryptography. **SSL offloading** means dedicating a server to manage the entire TLS process. Clients connect over HTTPS; this server handles the handshake, decrypts the incoming request, and forwards plain HTTP to application servers behind it. On the way back, it encrypts the response before returning it to the client. This relieves application servers of TLS tasks, allowing them to focus on content delivery. The server also acts as a **reverse proxy** between the internet and backend servers, forwarding requests and responses.
+**SSL offloading** means dedicating a server to handle TLS termination for incoming HTTPS connections. This server performs the handshake, decrypts the incoming request, and forwards plain HTTP to application servers behind it. On the way back, it encrypts the response before returning it to the client. This relieves application servers of TLS tasks, allowing them to focus on content delivery. The server also acts as a **reverse proxy** between the internet and backend servers, forwarding requests and responses.
 
 ## The Server
 
+| Resource | Spec |
+|----------|------|
+| CPU | 4 × Intel Xeon E7-4830 v4 @ 2.00 GHz — **56 physical cores** (112 with hyperthreading) |
+| RAM | 64 GB |
+| Storage | 2 TB HDD (a traditional spinning hard drive, not an SSD) |
+| Network | 2 × 10 Gbit/s NICs (network interface cards — the physical network ports) |
+| Workload | ~25,000 HTTPS requests per second |
 
-| Resource | Spec                                                                                   |
-| -------- | -------------------------------------------------------------------------------------- |
-| CPU      | 4 × Intel Xeon E7-4830 v4 @ 2.00 GHz — **56 physical cores** (112 with hyperthreading) |
-| RAM      | 64 GB                                                                                  |
-| Storage  | 2 TB HDD (a traditional spinning hard drive, not an SSD)                               |
-| Network  | 2 × 10 Gbit/s NICs (network interface cards — the physical network ports)              |
-| Workload | ~25,000 HTTPS requests per second                                                      |
-
-
-**CPU** is likely the first resource to reach capacity — the TLS handshake involves heavy public-key cryptography, and at 25k req/s that adds up fast. (The bulk AES encryption/decryption is much cheaper, especially with hardware acceleration on these Xeons.) **Network** is the second concern at this traffic volume. **Memory** and **disk** are generous for a proxy and unlikely to bottleneck, but still worth watching.
+In this scenario, **CPU** is likely the first resource to reach capacity — the TLS handshake involves heavy public-key cryptography, and at 25k req/s that adds up fast. **Network** is the second concern at this traffic volume. For a proxy, **memory** and **disk** are not likely to bottleneck, but they are still worth keeping an eye on.
 
 ## Interesting Metrics
 
 The table below summarises every metric worth tracking on this server. Detailed explanations follow.
 
-
-| Category    | Metric                             | Prometheus Metric                                                       | Why It Matters                                                                                           |
-| ----------- | ---------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **CPU**     | Per-core utilisation               | `node_cpu_seconds_total`                                                | 1 core at 100% handling NIC interrupts stalls the server; aggregate CPU shows 15%                        |
-|             | Load average                       | `node_load1`, `node_load5`, `node_load15`                               | Load above 112 means processes are queuing for CPU time                                                  |
-|             | SSL handshake rate / session reuse | `nginx_ssl_handshakes`, `nginx_ssl_session_reuses`                      | Reuse dropping from 80% to 40% doubles handshake CPU cost at the same req/s                              |
-| **Network** | Bytes in/out per NIC               | `node_network_receive_bytes_total`, `node_network_transmit_bytes_total` | At 25k req/s with 5 KB responses, each NIC approaches 1 Gbit/s — headroom shrinks fast                   |
-|             | Packet drops and errors            | `node_network_receive_drop_total`, `node_network_transmit_errs_total`   | Drops mean the kernel can't keep up; clients see timeouts before bandwidth is saturated                  |
-|             | TCP retransmits                    | `node_netstat_Tcp_RetransSegs`                                          | Retransmits add latency and waste CPU on duplicate processing                                            |
-|             | Conntrack table usage              | `node_nf_conntrack_entries`, `node_nf_conntrack_entries_limit`          | Default max is 65k–260k; at 25k req/s with 60s TIME_WAIT, it fills up and silently drops new connections |
-| **Memory**  | Available memory                   | `node_memory_MemAvailable_bytes`, `node_memory_MemTotal_bytes`          | A slow downward trend over days means a memory leak in the proxy or session cache                        |
-|             | Connection count                   | `node_netstat_Tcp_CurrEstab`, `node_sockstat_TCP_tw`                    | 25k req/s with keep-alive can mean 200k+ open sockets; each holds kernel and proxy memory                |
-| **Disk**    | Disk utilisation                   | `node_disk_io_time_seconds_total`                                       | An HDD above 80% busy stalls synchronous log writes, adding latency to requests                          |
-|             | Free space                         | `node_filesystem_avail_bytes`                                           | 25k req/s × 200 bytes/line = ~400 GB/day of logs; 2 TB fills in under a week                             |
-| **SSL/TLS** | Certificate expiry                 | `probe_ssl_earliest_cert_expiry`                                        | An expired cert returns TLS errors to every client — full outage                                         |
-|             | Handshake errors                   | `nginx_ssl_handshakes_failed`                                           | A spike after a deploy means the new cert is broken or misconfigured                                     |
-| **Proxy**   | Request rate                       | `nginx_http_requests_total`                                             | A sudden drop from 25k to 15k req/s likely means an upstream is down, not that traffic decreased         |
-|             | Error rate (5xx)                   | `nginx_http_requests_total{status=~"5.."}`                              | 502/503 responses mean backends are failing; even 0.1% = 25 errors/second at this scale                  |
-|             | Latency percentiles                | `nginx_http_request_duration_seconds_bucket`                            | If p50 is 2ms but p99 is 500ms, 1 in 100 users waits 250x longer — something is intermittently broken    |
-|             | Active connections                 | `nginx_connections_active`                                              | Hitting the proxy's `worker_connections` limit causes connection refusals                                |
-
+| Category | Metric | Prometheus Metric |
+|----------|--------|-------------------|
+| **CPU** | Per-core utilisation | `node_cpu_seconds_total` |
+| | Load average | `node_load1`, `node_load5`, `node_load15` |
+| | SSL handshake rate / session reuse | `nginx_ssl_handshakes`, `nginx_ssl_session_reuses` |
+| **Network** | Bytes in/out per NIC | `node_network_receive_bytes_total`, `node_network_transmit_bytes_total` |
+| | Packet drops and errors | `node_network_receive_drop_total`, `node_network_transmit_errs_total` |
+| | TCP retransmits | `node_netstat_Tcp_RetransSegs` |
+| | Conntrack table usage | `node_nf_conntrack_entries`, `node_nf_conntrack_entries_limit` |
+| **Memory** | Available memory | `node_memory_MemAvailable_bytes`, `node_memory_MemTotal_bytes` |
+| | Connection count | `node_netstat_Tcp_CurrEstab`, `node_sockstat_TCP_tw` |
+| **Disk** | Disk utilisation | `node_disk_io_time_seconds_total` |
+| | Free space | `node_filesystem_avail_bytes` |
+| **SSL/TLS** | Certificate expiry | `probe_ssl_earliest_cert_expiry` |
+| | Handshake errors | `nginx_ssl_handshakes_failed` |
+| **Proxy** | Request rate | `nginx_http_requests_total` |
+| | Error rate (5xx) | `nginx_http_requests_total{status=~"5.."}` |
+| | Latency percentiles | `nginx_http_request_duration_seconds_bucket` |
+| | Active connections | `nginx_connections_active` |
 
 System-level metrics are collected by **node_exporter** (a lightweight agent on port 9100). Proxy-level metrics come from the proxy's own exporter (e.g., nginx-prometheus-exporter or HAProxy's stats socket). Certificate checks use **blackbox_exporter**, which probes the endpoint from outside.
 
@@ -100,7 +96,7 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
   ┌─────────────────────────┐
   │   SSL Proxy Server      │
   │                         │
-  │   node_exporter:9100   │──► CPU, memory, disk, network, conntrack
+  │   node_exporter :9100   │──► CPU, memory, disk, network, conntrack
   │   proxy exporter        │──► req/s, latency, errors, SSL stats
   └────────────┬────────────┘
                │

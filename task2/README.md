@@ -129,8 +129,7 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
   └──────────────────┘
 
   + blackbox_exporter (runs on a DIFFERENT server)
-    ──► probes the HTTPS endpoint from outside
-    ──► checks TLS reachability + cert expiry
+   
 ```
 
 **Prometheus** scrapes both exporters every 15 seconds — frequent enough to catch issues quickly without adding meaningful CPU overhead.

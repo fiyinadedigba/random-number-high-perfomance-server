@@ -151,3 +151,7 @@ The exporters share CPU and memory with the proxy handling 25k req/s. `node_expo
 ### Observability at scale
 
 At 25,000 requests per second, per-request logging and tracing are impractical on this server (as discussed in the Disk section). The monitoring strategy must rely on **pre-aggregated metrics** (counters and histograms in Prometheus) rather than per-request data. When individual request-level debugging is needed, a sampled log stream shipped to a centralised system provides the deta
+
+
+>***Note***
+> Although my hands‑on experience is with Prometheus and Grafana, the core monitoring concepts apply equally to Zabbix.

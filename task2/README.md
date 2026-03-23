@@ -139,7 +139,8 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
   + blackbox_exporter (runs on a DIFFERENT server)
    
 ```
-  ![highperformanceserver drawio drawio](https://github.com/user-attachments/assets/83862d4b-720d-460d-8a7c-5aa733b140e4)
+  
+ ![highperformanceserver drawio drawio (2)](https://github.com/user-attachments/assets/fb8fbb2a-6356-4141-a51d-82a1f5cb5a89)
 
 
 

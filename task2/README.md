@@ -54,13 +54,13 @@ The table below summarises every metric worth tracking on this server. Detailed 
 | | Latency percentiles | `nginx_http_request_duration_seconds_bucket` |
 | | Active connections | `nginx_connections_active` |
 
-System-level metrics are collected by **node_exporter** (a lightweight agent on port 9100). Proxy-level metrics come from the proxy's own exporter (e.g., nginx-prometheus-exporter or HAProxy's stats socket). Certificate checks use **blackbox_exporter**, which probes the endpoint from outside.
+System-level metrics are collected by **node_exporter** (a lightweight agent on port 9100). Proxy-level metrics come from the proxy's own exporter (e.g., nginx-prometheus-exporter). Certificate checks use **blackbox_exporter**, which probes the endpoint from outside.
 
 ### CPU
 
-TLS handshakes come in two forms: a **full handshake** on first connection (expensive, involves public-key crypto) and a **resumed session** that reuses a cached key (roughly 10x cheaper). The ratio between them directly controls CPU load — even at a constant 25k req/s, a drop in session reuse from 80% to 40% effectively doubles the handshake workload.
+TLS handshakes come in two forms: a **full handshake** on first connection (expensive, involves public-key crypto) and a **resumed session** that reuses a cached key (roughly 10x cheaper). The ratio between them directly controls CPU load, even at a constant 25k req/s, a drop in session reuse from 80% to 40% effectively doubles the handshake workload.
 
-The key challenge with CPU on this server is that **aggregate utilisation is misleading**. With 112 threads, the average might show 15% while a single core is at 100%. This happens when **RSS (Receive Side Scaling)** — the kernel feature that spreads incoming packets across cores — isn't properly configured. One core ends up handling all NIC interrupts and becomes the bottleneck. The fix is to monitor `rate(node_cpu_seconds_total[5m])` per core (using the `cpu` and `mode` labels) and alert when any individual core exceeds a threshold, not just the average.
+The key challenge with CPU on this server is that **aggregate utilisation is misleading**. With 112 threads, the average might show 15% while a single core is at 100%. This happens when **RSS (Receive Side Scaling)**, the kernel feature that spreads incoming packets across cores, isn't properly configured. One core ends up handling all NIC interrupts and becomes the bottleneck. The fix is to monitor `rate(node_cpu_seconds_total[5m])` per core (using the `cpu` and `mode` labels) and alert when any individual core exceeds a threshold, not just the average.
 
 Load average (`node_load1/5/15`) is a useful secondary signal: consistently above 112 means the server is saturated.
 
@@ -68,13 +68,13 @@ Load average (`node_load1/5/15`) is a useful secondary signal: consistently abov
 
 Two failure modes exist at this traffic volume: saturating **bandwidth** (approaching 10 Gbit/s per NIC) and exceeding the NIC's **packet-rate** limit (small responses produce more packets per gigabit). Inbound encrypted traffic is slightly larger than outbound cleartext due to TLS overhead, so the two directions won't be symmetrical. Use the `device` label on `node_network_receive_bytes_total` / `node_network_transmit_bytes_total` to monitor each NIC independently.
 
-Packet drops (`node_network_receive_drop_total`) often appear before bandwidth is fully used — the kernel starts dropping frames when it can't process them fast enough. TCP retransmits (`node_netstat_Tcp_RetransSegs`) are the downstream effect: the client doesn't get an acknowledgement, so it resends, adding latency and wasting CPU.
+Packet drops (`node_network_receive_drop_total`) often appear before bandwidth is fully used, the kernel starts dropping frames when it can't process them fast enough. TCP retransmits (`node_netstat_Tcp_RetransSegs`) are the downstream effect: the client doesn't get an acknowledgement, so it resends, adding latency and wasting CPU.
 
-The most dangerous network metric on this server is **conntrack table usage**. The Linux kernel tracks every connection in a fixed-size table (65k–260k entries by default). At 25k req/s, completed connections stay in `TIME_WAIT` for up to 60 seconds, so the table accumulates entries fast. When it fills up, the kernel **silently drops new connections** — no error in the proxy logs, no TCP reset to the client, no indication at all. The SYN packet simply vanishes. This is extremely hard to debug after the fact, which is why proactive monitoring of `node_nf_conntrack_entries` against `node_nf_conntrack_entries_limit` is essential. The mitigation is to tune `nf_conntrack_max` upward based on observed connection rates and alert at 80% capacity.
+The most dangerous network metric on this server is **conntrack table usage**. The Linux kernel tracks every connection in a fixed-size table (65k–260k entries by default). At 25k req/s, completed connections stay in `TIME_WAIT` for up to 60 seconds, so the table accumulates entries fast. When it fills up, the kernel **silently drops new connections** : no error in the proxy logs, no TCP reset to the client, no indication at all. The SYN packet simply vanishes. This is extremely hard to debug after the fact, which is why proactive monitoring of `node_nf_conntrack_entries` against `node_nf_conntrack_entries_limit` is essential. The mitigation is to tune `nf_conntrack_max` upward based on observed connection rates and alert at 80% capacity.
 
 ### Memory
 
-64 GB is generous for a proxy. The main consumers — SSL session cache, per-connection buffers, and kernel socket buffers — are unlikely to exhaust it. The value of monitoring memory here is primarily as a **leak detector**: if `node_memory_MemAvailable_bytes` trends downward over days, something is wrong. (Use "available" rather than "free" — Linux uses unused memory for disk caching, so "free" looks low even when things are healthy.)
+64 GB is generous for a proxy. The main consumers — SSL session cache, per-connection buffers, and kernel socket buffers — are unlikely to exhaust it. The value of monitoring memory here is primarily as a **leak detector**: if `node_memory_MemAvailable_bytes` trends downward over days, something is wrong. (Use "available" rather than "free". Linux uses unused memory for disk caching, so "free" looks low even when things are healthy.)
 
 Connection count (`node_netstat_Tcp_CurrEstab` + `node_sockstat_TCP_tw`) is useful for correlation: a spike in connections often precedes spikes in CPU and memory.
 
@@ -88,13 +88,13 @@ Monitor `rate(node_disk_io_time_seconds_total[5m])` for utilisation (approaching
 
 ### SSL / TLS Health
 
-Certificate expiry (`probe_ssl_earliest_cert_expiry` from blackbox_exporter) should be probed externally — from outside the server, not from the server itself. This catches cases where the cert is valid on disk but not trusted by browsers (wrong chain, wrong hostname). An alert rule like `probe_ssl_earliest_cert_expiry - time() < 86400 * 7` fires 7 days before expiry.
+Certificate expiry (`probe_ssl_earliest_cert_expiry` from blackbox_exporter) should be probed externally, from outside the server, not from the server itself. This catches cases where the cert is valid on disk but not trusted by browsers (wrong chain, wrong hostname). An alert rule like `probe_ssl_earliest_cert_expiry - time() < 86400 * 7` fires 7 days before expiry.
 
-Handshake errors (`nginx_ssl_handshakes_failed` for Nginx; `haproxy_frontend_ssl_connections_total` with error labels for HAProxy) spike when something changes — a bad certificate deployment, a client fleet updating to an incompatible TLS version, or a misconfigured cipher suite.
+Handshake errors (`nginx_ssl_handshakes_failed` for Nginx; `haproxy_frontend_ssl_connections_total` with error labels for HAProxy) spike when something changes, a bad certificate deployment, a client fleet updating to an incompatible TLS version, or a misconfigured cipher suite.
 
 ### Proxy Application Metrics
 
-These are the user-facing indicators of service health.
+These are the user facing indicators of service health.
 
 Request rate (`rate(nginx_http_requests_total[1m])`) establishes the baseline. A sudden drop from 25k to 15k req/s usually means something upstream broke, not that traffic naturally decreased.
 
@@ -132,7 +132,7 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
    
 ```
 
-**Prometheus** scrapes both exporters every 15 seconds — frequent enough to catch issues quickly without adding meaningful CPU overhead.
+**Prometheus** scrapes both exporters every 15 seconds, frequent enough to catch issues quickly without adding meaningful CPU overhead.
 
 **Alertmanager** routes critical alerts to the on-call team: certificate expiration, CPU saturation, conntrack table saturation, error rate spikes, and disk full.
 

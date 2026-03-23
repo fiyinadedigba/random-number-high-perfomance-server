@@ -1,4 +1,4 @@
-# Monitoring a High-Performance SSL Offloading Server
+[highperformanceserver.drawio](https://github.com/user-attachments/files/26173982/highperformanceserver.drawio)# Monitoring a High-Performance SSL Offloading Server
 
 ---
 
@@ -139,6 +139,101 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
   + blackbox_exporter (runs on a DIFFERENT server)
    
 ```
+
+[Uploading highperformanc<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="26.2.14">
+  <diagram name="Page-1" id="hRJxx-mcdvklTXMODVRa">
+    <mxGraphModel dx="900" dy="649" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FinPArPSXwNyxFy5TTqY-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-2" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;SSL Proxy Server&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(node_exporter: 9100, p&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;roxy exporter)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="130" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-3" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="144.5" as="sourcePoint" />
+            <mxPoint x="400" y="144.5" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-4" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="184.5" as="sourcePoint" />
+            <mxPoint x="400" y="184.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-5" value="req/s, latency, errors, SSL stats" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="170" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-6" value="CPU, memory, disk, network, conntrack" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="400" y="130" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-7" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-8" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="240" y="200" as="sourcePoint" />
+            <mxPoint x="240" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-9" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Prometheus&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(Stores metrics&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+ evaluates alert rules)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-10" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="300" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-11" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="FinPArPSXwNyxFy5TTqY-9" target="FinPArPSXwNyxFy5TTqY-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="360" y="380" as="sourcePoint" />
+            <mxPoint x="410" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-12" value="Alertmanager" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="407" y="305" width="86" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-13" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="520" y="319.5" as="sourcePoint" />
+            <mxPoint x="560" y="319.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-15" value="Slack/ PagerDuty" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="545" y="305" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-16" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="FinPArPSXwNyxFy5TTqY-9" target="FinPArPSXwNyxFy5TTqY-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="230" y="510" as="sourcePoint" />
+            <mxPoint x="240" y="424" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-17" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-18" value="&lt;b&gt;Grafana&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="175" y="445" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-20" value="Visual dashboards" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="395" y="445" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-21" value="&lt;b&gt;+ blackbox_exporter (runs on a DIFFERENT server)&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="530" width="210" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="FinPArPSXwNyxFy5TTqY-22" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="FinPArPSXwNyxFy5TTqY-17" target="FinPArPSXwNyxFy5TTqY-20">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="364" y="445" as="sourcePoint" />
+            <mxPoint x="414" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+eserver.drawio…]()
+
 
 **Prometheus** scrapes both exporters every 15 seconds, frequent enough to catch issues quickly without adding meaningful CPU overhead.
 

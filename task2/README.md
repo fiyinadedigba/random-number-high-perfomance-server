@@ -60,7 +60,9 @@ The table below summarises every metric worth tracking on this server. Detailed 
 | | Latency percentiles | `nginx_http_request_duration_seconds_bucket` |
 | | Active connections | `nginx_connections_active` |
 
-System-level metrics are collected by **node_exporter** (a lightweight agent on port 9100). Proxy-level metrics come from the proxy's own exporter (e.g., nginx-prometheus-exporter). Certificate checks use **blackbox_exporter**, which probes the endpoint from outside.
+- System-level metrics are collected by **node_exporter** (a lightweight agent on port 9100). 
+- Proxy-level metrics come from the proxy's own exporter (e.g., nginx-prometheus-exporter). 
+- Certificate checks use **blackbox_exporter**, which probes the endpoint from outside.
 
 ### CPU
 

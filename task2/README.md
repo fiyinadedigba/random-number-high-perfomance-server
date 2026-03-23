@@ -82,7 +82,7 @@ The most dangerous network metric on this server is **conntrack table usage**. T
 
 ### Memory
 
-64 GB is generous for a proxy. The main consumers — SSL session cache, per-connection buffers, and kernel socket buffers — are unlikely to exhaust it. The value of monitoring memory here is primarily as a **leak detector**: if `node_memory_MemAvailable_bytes` trends downward over days, something is wrong. (Use "available" rather than "free". Linux uses unused memory for disk caching, so "free" looks low even when things are healthy.)
+64 GB is generous for a proxy. The main consumers:SSL session cache, per-connection buffers, and kernel socket buffers, are unlikely to exhaust it. The value of monitoring memory here is primarily as a **leak detector**: if `node_memory_MemAvailable_bytes` trends downward over days, something is wrong. (Use "available" rather than "free". Linux uses unused memory for disk caching, so "free" looks low even when things are healthy.)
 
 Connection count (`node_netstat_Tcp_CurrEstab` + `node_sockstat_TCP_tw`) is useful for correlation: a spike in connections often precedes spikes in CPU and memory.
 
@@ -106,7 +106,7 @@ These are the user facing indicators of service health.
 
 Request rate (`rate(nginx_http_requests_total[1m])`) establishes the baseline. A sudden drop from 25k to 15k req/s usually means something upstream broke, not that traffic naturally decreased.
 
-Error rate — filter on `status=~"5.."` for 5xx server errors. At this scale, even a 0.1% error rate means 25 failed requests per second. HTTP 502 (Bad Gateway) or 503 (Service Unavailable) point to unhealthy or overloaded backends.
+Error rate, filter on `status=~"5.."` for 5xx server errors. At this scale, even a 0.1% error rate means 25 failed requests per second. HTTP 502 (Bad Gateway) or 503 (Service Unavailable) point to unhealthy or overloaded backends.
 
 Latency percentiles from `nginx_http_request_duration_seconds_bucket` (computed via `histogram_quantile`) reveal intermittent problems that averages hide. If p50 is 2ms but p99 is 500ms, 1 in 100 users is waiting 250x longer than typical.
 
@@ -154,7 +154,7 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
 
 ### Monitoring overhead
 
-The exporters share CPU and memory with the proxy handling 25k req/s. `node_exporter` is negligible (well under 1% CPU). The proxy exporter needs more scrutiny — if it parses access logs or computes histograms on every scrape, that cost adds up. Its CPU footprint should be tested under production-like load, and scrape intervals should stay at 15 seconds rather than being aggressively tightened.
+The exporters share CPU and memory with the proxy handling 25k req/s. `node_exporter` is negligible (well under 1% CPU). The proxy exporter needs more scrutiny, if it parses access logs or computes histograms on every scrape, that cost adds up. Its CPU footprint should be tested under production-like load, and scrape intervals should stay at 15 seconds rather than being aggressively tightened.
 
 ### Observability at scale
 

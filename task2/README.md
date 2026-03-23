@@ -21,7 +21,7 @@ The server also acts as a **reverse proxy** between the internet and backend ser
 ---
 ## The Server
 
-<img width="906" height="665" alt="Screenshot 2026-03-23 at 09 16 51" src="https://github.com/user-attachments/assets/057df198-32bc-46e3-a647-8d79b37d5cd4" />
+<img width="892" height="639" alt="Screenshot 2026-03-23 at 09 25 29" src="https://github.com/user-attachments/assets/2330d90b-6681-482d-9721-c4522dbb9f2a" />
 
 
 In this scenario (i.e at 25 req/s): 

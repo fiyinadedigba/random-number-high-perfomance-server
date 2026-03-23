@@ -115,35 +115,9 @@ Active connections (`nginx_connections_active`) tracks concurrent clients. When 
 ---
 ## How I'd Set This Up
 
-```
-  ┌─────────────────────────┐
-  │   SSL Proxy Server      │
-  │                         │
-  │   node_exporter :9100   │──► CPU, memory, disk, network, conntrack
-  │   proxy exporter        │──► req/s, latency, errors, SSL stats
-  └────────────┬────────────┘
-               │
-               ▼
-  ┌──────────────────┐     ┌──────────────────┐
-  │   Prometheus      │────►│   Alertmanager    │──► Slack / PagerDuty
-  │  (stores metrics  │     └──────────────────┘
-  │   + evaluates     │
-  │   alert rules)    │
-  └────────┬─────────┘
-           │
-           ▼
-  ┌──────────────────┐
-  │   Grafana         │  visual dashboards
-  └──────────────────┘
-
-  + blackbox_exporter (runs on a DIFFERENT server)
-   
-```
  <img width="771" height="540" alt="Screenshot 2026-03-23 at 08 13 57" src="https://github.com/user-attachments/assets/5cfa8d6f-7050-47cf-bfc1-2071fa7c88af" />
 
   
-
-
 
 **Prometheus** scrapes both exporters every 15 seconds, frequent enough to catch issues quickly without adding meaningful CPU overhead.
 
